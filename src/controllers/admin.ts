@@ -18,14 +18,14 @@ export const signUp = async (req: Request, res: Response) => {
     await admin.save();
 
     const transport = nodemailer.createTransport({
-      service: "gmail",
+      service: process.env.GOOGLE_SERVICE,
       auth: {
-        user: "tarekjassine@gmail.com",
-        pass: "wonoytjxbqgxhjtm",
+        user: process.env.GOOGLE_EMAIL,
+        pass: process.env.GOOGLE_PASSWORD,
       },
     });
     await transport.sendMail({
-      from: "tarekjassine@gmail.com",
+      from: process.env.GOOGLE_EMAIL,
       to: admin.email,
       subject: "Verify your E-Mail",
       html: `<p>Verify your E-Mail to use the App</p>
