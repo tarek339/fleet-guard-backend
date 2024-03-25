@@ -45,4 +45,5 @@ export interface IVehicle {
   weight: string;
   nextHU: string;
   nextSP: string;
+  nextTachograph?: string;
 }

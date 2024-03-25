@@ -12,6 +12,7 @@ export const registerTruck = async (req: Request, res: Response) => {
       weight: req.body.weight,
       nextHU: req.body.nextHU,
       nextSP: req.body.nextSP,
+      nextTachograph: req.body.nextTachograph,
     });
     await truck.save();
 
@@ -25,6 +26,7 @@ export const registerTruck = async (req: Request, res: Response) => {
         weight: truck.weight,
         nextHU: truck.nextHU,
         nextSP: truck.nextSP,
+        nextTachograph: truck.nextTachograph,
       },
     });
   } catch (err) {
@@ -83,6 +85,7 @@ export const editProfile = async (req: Request, res: Response) => {
       (truck.weight = req.body.weight),
       (truck.nextHU = req.body.nextHU),
       (truck.nextSP = req.body.nextSP),
+      (truck.nextTachograph = req.body.nextTachograph),
       await truck.save();
 
     res.json({

@@ -34,6 +34,10 @@ const truckSchema = new Schema({
   nextSP: {
     type: String,
   },
+
+  nextTachograph: {
+    type: String,
+  },
 });
 
 export const Truck =
