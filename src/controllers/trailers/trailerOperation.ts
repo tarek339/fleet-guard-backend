@@ -38,10 +38,7 @@ export const loopTrailers = async () => {
 
         companyTrailers.push(trailerToAdd as ICompanyTrailer);
 
-        const existingTrailers = companyTrailers.find(
-          (compTr) =>
-            compTr.trailer.trailerId === trailerToAdd.trailer.trailerId
-        );
+        const existingTrailers = companyTrailers.find((compTr) => compTr);
 
         if (existingTrailers) {
           const transport = nodemailer.createTransport({

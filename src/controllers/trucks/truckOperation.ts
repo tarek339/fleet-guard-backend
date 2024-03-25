@@ -36,9 +36,7 @@ export const loopTrucks = async () => {
 
         companyTrucks.push(truckToAdd as ICompanyTruck);
 
-        const existingTrucks = companyTrucks.find(
-          (compTr) => compTr.truck.truckId === truckToAdd.truck.truckId
-        );
+        const existingTrucks = companyTrucks.find((compTr) => compTr);
 
         if (existingTrucks) {
           const transport = nodemailer.createTransport({

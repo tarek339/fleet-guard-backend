@@ -47,9 +47,7 @@ export const loopDrivers = async () => {
 
         companyDrivers.push(driverToAdd as ICompanyDrivers);
 
-        const existingDriver = companyDrivers.find(
-          (compDr) => compDr.driver.driverId === driverToAdd.driver.driverId
-        );
+        const existingDriver = companyDrivers.find((compDr) => compDr);
 
         if (existingDriver) {
           const transport = nodemailer.createTransport({
