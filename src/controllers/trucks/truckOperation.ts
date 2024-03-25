@@ -2,7 +2,6 @@ import { differenceInDays } from "date-fns";
 import { Company } from "../../models/company";
 import { ICompany, IVehicle } from "../../types/properties";
 import dayjs from "dayjs";
-import { ICompanyTruck } from "../../types/interfaces";
 import { Truck } from "../../models/truck";
 const nodemailer = require("nodemailer");
 
@@ -19,47 +18,31 @@ export const loopTrucks = async () => {
       const HUDays = differenceInDays(new Date(expireHU), presentDate);
       const SPDays = differenceInDays(new Date(expireSP), presentDate);
 
-      const companyTrucks: ICompanyTruck[] = [];
-
       if (HUDays < 90 || SPDays < 90) {
-        const truckToAdd = {
-          truck: {
-            companyId: company?._id,
-            company: company?.company,
-            email: company?.email,
-            truckId: truck.companyId,
-            indicator: truck.indicator,
-            nextHU: dayjs(truck.nextHU).format("DD.MM.YYYY"),
-            nextSP: dayjs(truck.nextSP).format("DD.MM.YYYY"),
+        const transport = nodemailer.createTransport({
+          service: "gmail",
+          port: false,
+          secure: true,
+          auth: {
+            user: "tarekjassine@gmail.com",
+            pass: process.env.GOOGLE_PASSWORD,
           },
-        };
-
-        companyTrucks.push(truckToAdd as ICompanyTruck);
-
-        const existingTrucks = companyTrucks.find((compTr) => compTr);
-
-        if (existingTrucks) {
-          const transport = nodemailer.createTransport({
-            service: "gmail",
-            port: false,
-            secure: true,
-            auth: {
-              user: "tarekjassine@gmail.com",
-              pass: process.env.GOOGLE_PASSWORD,
-            },
-          });
-          await transport.sendMail({
-            from: "tarekjassine@gmail.com",
-            to: existingTrucks?.truck.email,
-            subject: `Info Docu Guard Trucks`,
-            html: `
-          <p>${existingTrucks?.truck.company}</p>
-          <p>${existingTrucks?.truck.indicator}</p>
-          <p>Next main inspection is on ${existingTrucks?.truck.nextHU}</p>
-          <p>Next saftey inspection is on ${existingTrucks?.truck.nextSP}</p>
+        });
+        await transport.sendMail({
+          from: "tarekjassine@gmail.com",
+          to: company?.email,
+          subject: `Info Docu Guard Trucks`,
+          html: `
+          <p>${company?.company}</p>
+          <p>${truck.indicator}</p>
+          <p>Next main inspection is on ${dayjs(truck.nextHU).format(
+            "MM.YYYY"
+          )}</p>
+          <p>Next saftey inspection is on ${dayjs(truck.nextSP).format(
+            "MM.YYYY"
+          )}</p>
           `,
-          });
-        }
+        });
       }
     });
   } catch (error) {

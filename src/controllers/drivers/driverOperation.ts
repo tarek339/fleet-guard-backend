@@ -2,7 +2,6 @@ import { differenceInDays } from "date-fns";
 import { Company } from "../../models/company";
 import { Driver } from "../../models/driver";
 import { ICompany, IDriver } from "../../types/properties";
-import { ICompanyDrivers } from "../../types/interfaces";
 import dayjs from "dayjs";
 const nodemailer = require("nodemailer");
 
@@ -28,50 +27,34 @@ export const loopDrivers = async () => {
         presentDate
       );
 
-      const companyDrivers: ICompanyDrivers[] = [];
-
       if (typeDays < 90 || codeNumDays < 90 || cardNumDays < 90) {
-        const driverToAdd = {
-          driver: {
-            companyId: company?._id,
-            company: company?.company,
-            email: company?.email,
-            driverId: driver.companyId,
-            firstName: driver.firstName,
-            lastName: driver.lastName,
-            typeValidU: dayjs(driver.typeValidU).format("DD.MM.YYYY"),
-            codeNumVU: dayjs(driver.codeNumValidU).format("DD.MM.YYYY"),
-            cardNumVU: dayjs(driver.driverCardNumValidU).format("DD.MM.YYYY"),
+        const transport = nodemailer.createTransport({
+          service: "gmail",
+          port: false,
+          secure: true,
+          auth: {
+            user: "tarekjassine@gmail.com",
+            pass: process.env.GOOGLE_PASSWORD,
           },
-        };
-
-        companyDrivers.push(driverToAdd as ICompanyDrivers);
-
-        const existingDriver = companyDrivers.find((compDr) => compDr);
-
-        if (existingDriver) {
-          const transport = nodemailer.createTransport({
-            service: "gmail",
-            port: false,
-            secure: true,
-            auth: {
-              user: "tarekjassine@gmail.com",
-              pass: process.env.GOOGLE_PASSWORD,
-            },
-          });
-          await transport.sendMail({
-            from: "tarekjassine@gmail.com",
-            to: existingDriver?.driver.email,
-            subject: `Info Docu Guard Drivers`,
-            html: `
-          <p>${existingDriver?.driver.company}</p>
-          <p>${existingDriver?.driver.firstName} ${existingDriver?.driver.lastName}</p>
-          <p>Driver's license type expires on ${existingDriver?.driver.typeValidU}</p>
-          <p>Code number expires on ${existingDriver?.driver.codeNumVU}</p>
-          <p>Dirver's card number expires on ${existingDriver?.driver.cardNumVU}</p>
+        });
+        await transport.sendMail({
+          from: "tarekjassine@gmail.com",
+          to: company?.email,
+          subject: `Info Docu Guard Drivers`,
+          html: `
+          <p>${company?.company}</p>
+          <p>${driver.firstName} ${driver.lastName}</p>
+          <p>Driver's license type expires on ${dayjs(driver.typeValidU).format(
+            "DD.MM.YYYY"
+          )}</p>
+          <p>Code number expires on ${dayjs(driver.codeNumValidU).format(
+            "DD.MM.YYYY"
+          )}</p>
+          <p>Dirver's card number expires on ${dayjs(
+            driver.driverCardNumValidU
+          ).format("DD.MM.YYYY")}</p>
           `,
-          });
-        }
+        });
       }
     });
   } catch (error) {
