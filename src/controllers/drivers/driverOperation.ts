@@ -58,7 +58,7 @@ export const loopDrivers = async () => {
             secure: true,
             auth: {
               user: "tarekjassine@gmail.com",
-              pass: "wonoytjxbqgxhjtm",
+              pass: process.env.GOOGLE_PASSWORD,
             },
           });
           await transport.sendMail({
