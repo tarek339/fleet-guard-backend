@@ -64,7 +64,7 @@ export const loopDrivers = async () => {
           await transport.sendMail({
             from: "tarekjassine@gmail.com",
             to: existingDriver?.driver.email,
-            subject: `Info Docu Guard`,
+            subject: `Info Docu Guard Drivers`,
             html: `
           <p>${existingDriver?.driver.company}</p>
           <p>${existingDriver?.driver.firstName} ${existingDriver?.driver.lastName}</p>

@@ -56,7 +56,7 @@ export const loopTrailers = async () => {
           await transport.sendMail({
             from: "tarekjassine@gmail.com",
             to: existingTrailers?.trailer.email,
-            subject: `Info Docu Guard`,
+            subject: `Info Docu Guard Trailer`,
             html: `
           <p>${existingTrailers?.trailer.company}</p>
           <p>${existingTrailers?.trailer.indicator}</p>
