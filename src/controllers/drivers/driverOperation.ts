@@ -29,16 +29,16 @@ export const loopDrivers = async () => {
 
       if (typeDays < 90 || codeNumDays < 90 || cardNumDays < 90) {
         const transport = nodemailer.createTransport({
-          service: "gmail",
+          service: process.env.GOOGLE_SERVICE,
           port: false,
           secure: true,
           auth: {
-            user: "tarekjassine@gmail.com",
+            user: process.env.GOOGLE_EMAIL,
             pass: process.env.GOOGLE_PASSWORD,
           },
         });
         await transport.sendMail({
-          from: "tarekjassine@gmail.com",
+          from: process.env.GOOGLE_EMAIL,
           to: company?.email,
           subject: `Info Docu Guard Drivers`,
           html: `
