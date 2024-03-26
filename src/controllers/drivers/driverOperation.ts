@@ -1,16 +1,17 @@
 import { differenceInDays } from "date-fns";
-import { Company } from "../../models/company";
 import { Driver } from "../../models/driver";
 import { ICompany, IDriver } from "../../types/properties";
 import dayjs from "dayjs";
 const nodemailer = require("nodemailer");
 
+let companies: any = {};
+
 export const loopDrivers = async () => {
   try {
-    const drivers: IDriver[] = await Driver.find();
+    const drivers: IDriver[] = await Driver.find().populate("companyId");
 
     drivers.forEach(async (driver: IDriver, index) => {
-      const company: ICompany | null = await Company.findById(driver.companyId);
+      const company: ICompany = driver.companyId as unknown as ICompany;
 
       const presentDate = new Date();
       const expireDayType = driver.typeValidU;
@@ -28,36 +29,64 @@ export const loopDrivers = async () => {
       );
 
       if (typeDays < 90 || codeNumDays < 90 || cardNumDays < 90) {
-        const transport = nodemailer.createTransport({
-          service: process.env.GOOGLE_SERVICE,
-          port: false,
-          secure: true,
-          auth: {
-            user: process.env.GOOGLE_EMAIL,
-            pass: process.env.GOOGLE_PASSWORD,
-          },
-        });
-        await transport.sendMail({
-          from: process.env.GOOGLE_EMAIL,
-          to: company?.email,
-          subject: `Info Docu Guard Drivers`,
-          html: `
-          <p>${company?.company}</p>
-          <p>${driver.firstName} ${driver.lastName}</p>
-          <p>Driver's license type expires on ${dayjs(driver.typeValidU).format(
-            "DD.MM.YYYY"
-          )}</p>
-          <p>Code number expires on ${dayjs(driver.codeNumValidU).format(
-            "DD.MM.YYYY"
-          )}</p>
-          <p>Dirver's card number expires on ${dayjs(
-            driver.driverCardNumValidU
-          ).format("DD.MM.YYYY")}</p>
-          `,
-        });
+        const driverToAdd = {
+          company: company?.company,
+          email: company?.email,
+          firstName: driver.firstName,
+          lastName: driver.lastName,
+          licenseType: driver.licenseType,
+          typeValidU: driver.typeValidU,
+          codeNumValidU: driver.codeNumValidU,
+          driverCardNumValidU: driver.driverCardNumValidU,
+        };
+
+        if (company._id in companies) {
+          companies[company._id].push(driverToAdd);
+        } else {
+          companies[company._id] = [driverToAdd];
+        }
       }
     });
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const pushDriverEmail = async () => {
+  const transport = nodemailer.createTransport({
+    service: process.env.GOOGLE_SERVICE,
+    port: false,
+    secure: true,
+    auth: {
+      user: process.env.GOOGLE_EMAIL,
+      pass: process.env.GOOGLE_PASSWORD,
+    },
+  });
+
+  for (let key of Object.keys(companies)) {
+    const filteredDrivers = companies[key];
+
+    await transport.sendMail({
+      from: process.env.GOOGLE_EMAIL,
+      to: filteredDrivers[0].email,
+      subject: `Info Docu Guard Trailer`,
+      html: `
+            <p>${filteredDrivers[0].company}</p>
+            ${filteredDrivers.map((driver: IDriver) => {
+              return `
+              <p>${driver.firstName} ${driver.lastName}</p>
+            <p>License type ${driver.licenseType} expires on ${dayjs(
+                driver.typeValidU
+              ).format("MM.YYYY")}</p>
+            <p>The code number expires on ${dayjs(driver.codeNumValidU).format(
+              "MM.YYYY"
+            )}</p>
+            <p>The driver's card expires on ${dayjs(
+              driver.driverCardNumValidU
+            ).format("MM.YYYY")}</p>
+              `;
+            })}
+            `,
+    });
   }
 };

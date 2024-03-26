@@ -7,9 +7,18 @@ import { router as admin } from "./routes/admin";
 import { router as driver } from "./routes/driver";
 import { router as truck } from "./routes/truck";
 import { router as trailer } from "./routes/trailer";
-import { loopDrivers } from "./controllers/drivers/driverOperation";
-import { loopTrailers } from "./controllers/trailers/trailerOperation";
-import { loopTrucks } from "./controllers/trucks/truckOperation";
+import {
+  loopDrivers,
+  pushDriverEmail,
+} from "./controllers/drivers/driverOperation";
+import {
+  loopTrailers,
+  pushTrailerEmail,
+} from "./controllers/trailers/trailerOperation";
+import {
+  loopTrucks,
+  pushTruckEmail,
+} from "./controllers/trucks/truckOperation";
 
 dotenv.config();
 
@@ -24,9 +33,22 @@ app.use("/driver", driver);
 app.use("/truck", truck);
 app.use("/trailer", trailer);
 
-// loopDrivers();
-// loopTrailers();
-// loopTrucks();
+const runTrailerOperations = async () => {
+  await loopTrailers();
+  pushTrailerEmail();
+};
+const runTruckOperations = async () => {
+  await loopTrucks();
+  pushTruckEmail();
+};
+const runDriverOperations = async () => {
+  await loopDrivers();
+  pushDriverEmail();
+};
+
+// runTrailerOperations();
+// runTruckOperations();
+runDriverOperations();
 
 const connect = async () => {
   try {
