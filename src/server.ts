@@ -46,15 +46,13 @@ const runDriverOperations = async () => {
   pushDriverEmail();
 };
 
-// runTrailerOperations();
-// runTruckOperations();
+runTrailerOperations();
+runTruckOperations();
 runDriverOperations();
 
 const connect = async () => {
   try {
-    await mongoose.connect(
-      "mongodb+srv://tarek:Sony2020@cluster0.ywzi97j.mongodb.net/fleet-guard?retryWrites=true&w=majority"
-    );
+    await mongoose.connect(process.env.DB_CONNECT!);
     app.listen(port, () => {
       console.log(`[server]: Server is running at http://localhost:${port}`);
     });
