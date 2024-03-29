@@ -2,9 +2,10 @@ import { differenceInDays } from "date-fns";
 import { Driver } from "../../models/driver";
 import { ICompany, IDriver } from "../../types/properties";
 import dayjs from "dayjs";
+import { ICompaniesDrivers, IDriversProps } from "../../types/interfaces";
 const nodemailer = require("nodemailer");
 
-let companies: any = {};
+let companies: ICompaniesDrivers = {};
 
 export const loopDrivers = async () => {
   try {
@@ -28,7 +29,14 @@ export const loopDrivers = async () => {
         presentDate
       );
 
-      if (typeDays < 90 || codeNumDays < 90 || cardNumDays < 90) {
+      if (
+        typeDays === 90 ||
+        codeNumDays === 90 ||
+        cardNumDays === 90 ||
+        typeDays === 30 ||
+        codeNumDays === 30 ||
+        cardNumDays === 30
+      ) {
         const driverToAdd = {
           company: company?.company,
           email: company?.email,
@@ -72,7 +80,7 @@ export const pushDriverEmail = async () => {
       subject: `Info Docu Guard Trailer`,
       html: `
             <p>${filteredDrivers[0].company}</p>
-            ${filteredDrivers.map((driver: IDriver) => {
+            ${filteredDrivers.map((driver: IDriversProps) => {
               return `
               <p>${driver.firstName} ${driver.lastName}</p>
             <p>License type ${driver.licenseType} expires on ${dayjs(

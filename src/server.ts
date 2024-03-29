@@ -46,9 +46,15 @@ const runDriverOperations = async () => {
   pushDriverEmail();
 };
 
-runTrailerOperations();
-runTruckOperations();
-runDriverOperations();
+// setInterval(() => {
+//   runTrailerOperations();
+// }, 86400);
+// setInterval(() => {
+//   runTruckOperations();
+// }, 86400);
+// setInterval(() => {
+//   runDriverOperations();
+// }, 86400);
 
 const connect = async () => {
   try {
@@ -57,11 +63,11 @@ const connect = async () => {
       console.log(`[server]: Server is running at http://localhost:${port}`);
     });
     app.get("/", (req, res) => {
-      res.send("Express + TypeScript Server");
+      res.send("Backend and DB connected");
     });
   } catch (error) {
     console.log(
-      "Internet connection Error! Not able to connect with Data base! check internet connection!"
+      "Internet connection Error! Not able to connect with Data base!"
     );
   }
 };

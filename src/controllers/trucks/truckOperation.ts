@@ -2,9 +2,10 @@ import { differenceInDays } from "date-fns";
 import { ICompany, IVehicle } from "../../types/properties";
 import dayjs from "dayjs";
 import { Truck } from "../../models/truck";
+import { ICompaniesTruck, ITruckProps } from "../../types/interfaces";
 const nodemailer = require("nodemailer");
 
-let companies: any = {};
+let companies: ICompaniesTruck = {};
 
 export const loopTrucks = async () => {
   try {
@@ -22,7 +23,14 @@ export const loopTrucks = async () => {
       const SPDays = differenceInDays(new Date(expireSP), presentDate);
       const TachoDays = differenceInDays(new Date(expireTacho!), presentDate);
 
-      if (HUDays < 90 || SPDays < 90 || TachoDays < 90) {
+      if (
+        HUDays === 90 ||
+        SPDays === 90 ||
+        TachoDays === 90 ||
+        HUDays === 30 ||
+        SPDays === 30 ||
+        TachoDays === 30
+      ) {
         const truckToAdd = {
           company: company?.company,
           email: company?.email,
@@ -33,9 +41,9 @@ export const loopTrucks = async () => {
         };
 
         if (company._id in companies) {
-          companies[company._id].push(truckToAdd);
+          companies[company._id].push(truckToAdd as ITruckProps);
         } else {
-          companies[company._id] = [truckToAdd];
+          companies[company._id] = [truckToAdd as ITruckProps];
         }
       }
     });
@@ -65,7 +73,7 @@ export const pushTruckEmail = async () => {
       html: `
             <p>${filteredTrucks[0].company}</p>
   
-            ${filteredTrucks.map((truck: IVehicle) => {
+            ${filteredTrucks.map((truck: ITruckProps) => {
               return `
               <p>${truck.indicator}</p>
             <p>Next main inspection is on ${dayjs(truck.nextHU).format(
@@ -74,9 +82,9 @@ export const pushTruckEmail = async () => {
             <p>Next saftey inspection is on ${dayjs(truck.nextSP).format(
               "MM.YYYY"
             )}</p>
-            <p>Next tachograph inspection is on ${dayjs(
-              truck.nextTachograph
-            ).format("MM.YYYY")}</p>
+            <p>Next tachograph inspection is on ${dayjs(truck.nextTacho).format(
+              "MM.YYYY"
+            )}</p>
               `;
             })}
             `,

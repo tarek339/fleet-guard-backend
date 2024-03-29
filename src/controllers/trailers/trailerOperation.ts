@@ -2,9 +2,10 @@ import { differenceInDays } from "date-fns";
 import { ICompany, IVehicle } from "../../types/properties";
 import dayjs from "dayjs";
 import { Trailer } from "../../models/trailer";
+import { ICompaniesTrailer, ITrailerProps } from "../../types/interfaces";
 const nodemailer = require("nodemailer");
 
-let companies: any = {};
+let companies: ICompaniesTrailer = {};
 
 export const loopTrailers = async () => {
   try {
@@ -20,7 +21,7 @@ export const loopTrailers = async () => {
       const HUDays = differenceInDays(new Date(expireHU), presentDate);
       const SPDays = differenceInDays(new Date(expireSP), presentDate);
 
-      if (HUDays < 90 || SPDays < 90) {
+      if (HUDays === 90 || SPDays === 90 || HUDays === 30 || SPDays === 30) {
         const trailerToAdd = {
           company: company?.company,
           email: company?.email,
@@ -62,7 +63,7 @@ export const pushTrailerEmail = async () => {
       html: `
             <p>${filteredTrailers[0].company}</p>
   
-            ${filteredTrailers.map((trailer: IVehicle) => {
+            ${filteredTrailers.map((trailer: ITrailerProps) => {
               return `
               <p>${trailer.indicator}</p>
             <p>Next main inspection is on ${dayjs(trailer.nextHU).format(
